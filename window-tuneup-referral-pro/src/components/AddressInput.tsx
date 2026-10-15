@@ -15,7 +15,8 @@ function loadPlaces(): Promise<any> {
     const s = document.createElement('script');
     s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(KEY)}&loading=async&v=weekly`;
     s.async = true;
-    s.onload = ready;
+    w.__wtuMapsReady = ready; // Google calls this once importLibrary exists; onload can fire too early
+    s.src += '&callback=__wtuMapsReady';
     s.onerror = () => reject(new Error('Google Maps failed to load'));
     document.head.appendChild(s);
   });
