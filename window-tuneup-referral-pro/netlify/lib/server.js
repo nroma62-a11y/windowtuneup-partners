@@ -30,6 +30,7 @@ const formatPhone10 = (d) => `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`
 /** Best-effort text to the owner. Never throws: an alert failing must not lose a lead or request. */
 async function smsRoman(body) {
   try { const { TELEGRAM_BOT_TOKEN: tg, TELEGRAM_CHAT_ID: chat } = process.env; if (tg && chat) await fetch(`https://api.telegram.org/bot${tg}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: chat, text: body }) }); } catch (e) { console.error('telegram alert failed', e.message); }
+  try { const { RESEND_API_KEY: rk, ALERT_EMAIL: to, ALERT_FROM: from } = process.env; if (rk && to) await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${rk}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ from: from || 'Window Tune-Up Alerts <onboarding@resend.dev>', to: [to], subject: body.slice(0, 80), text: body }) }); } catch (e) { console.error('email alert failed', e.message); }
   try {
     const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER, ROMAN_ALERT_PHONE } = process.env;
     if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_PHONE_NUMBER || !ROMAN_ALERT_PHONE) return;
